@@ -1,0 +1,91 @@
+import React from 'react'
+import Link from 'next/link'
+import { useOrderList } from 'lib/api/useOrderList'
+import { useItem } from 'lib/api/useItem'
+import Loading from 'components/Loading'
+
+const Hero = () => {
+	const { orderList, isLoading, error, refetchToken } = useOrderList({
+		paginateParams: { page: 1, perPage: 1 },
+	})
+	const heroOrder = orderList?.[0]
+	const { item: heroItem, isLoading: isLoadingItem } = useItem(
+		heroOrder?.address,
+		heroOrder?.token_id,
+		true,
+	)
+
+	return (
+		<section className="relative pb-10 pt-20 md:pt-32 h-1527">
+			<picture className="pointer-events-none absolute inset-x-0 top-0 -z-10 block dark:hidden h-full">
+				<img src="/images/gradient.jpg" alt="gradient" className="h-full w-full" />
+			</picture>
+			<picture className="pointer-events-none absolute inset-x-0 top-0 -z-10 hidden dark:block">
+				<img src="/images/gradient_dark.jpg" alt="gradient dark" className="h-full w-full" />
+			</picture>
+
+			<div className="container h-full mx-auto">
+				<div className="grid h-full items-center gap-4 md:grid-cols-12">
+					<div className="col-span-6 flex h-full flex-col items-center justify-center py-10 md:items-start md:py-20 xl:col-span-4">
+						<h1 className="text-jacarta-700 font-bold font-display mb-6 text-center text-5xl dark:text-white md:text-left lg:text-6xl xl:text-7xl">
+							Buy, sell and collect NFTs.
+						</h1>
+						<p className="dark:text-jacarta-200 mb-8 text-center text-lg md:text-left">
+							Create an order to sell your NFT
+						</p>
+						<div className="flex space-x-4">
+							<Link href="/import">
+								<a className="bg-accent shadow-accent-volume hover:bg-accent-dark w-36 rounded-full py-3 px-8 text-center font-semibold text-white transition-all">
+									Import
+								</a>
+							</Link>
+							<Link href="/listing">
+								<a className="text-accent shadow-white-volume hover:bg-accent-dark hover:shadow-accent-volume w-36 rounded-full bg-white py-3 px-8 text-center font-semibold transition-all hover:text-white">
+									Explore
+								</a>
+							</Link>
+						</div>
+					</div>
+
+					{/* <!-- Hero image --> */}
+					<div className="col-span-6 xl:col-span-8">
+						<Link
+							href={
+								heroOrder
+									? `/asset?collection=${heroOrder.collection.address}&id=${heroOrder.token_id}`
+									: '#'
+							}
+						>
+							<a>
+								<div className="relative text-center md:pl-8 md:text-right">
+									{isLoadingItem || isLoading ? (
+										<Loading className="my-6" />
+									) : heroItem ? (
+										<img
+											src={heroItem.image}
+											alt=""
+											className="hero-img mt-8 inline-block w-72 rotate-[8deg] sm:w-full lg:w-[24rem] xl:w-[35rem]"
+										/>
+									) : (
+										<img
+											src="/favicon.svg"
+											alt=""
+											className="hero-img mt-8 inline-block w-72 rotate-[8deg] sm:w-full lg:w-[24rem] xl:w-[35rem]"
+										/>
+									)}
+									<img
+										src="/images/hero/3D_elements.png"
+										alt=""
+										className="animate-fly absolute top-0 md:-right-[10%]"
+									/>
+								</div>
+							</a>
+						</Link>
+					</div>
+				</div>
+			</div>
+		</section>
+	)
+}
+
+export default Hero
